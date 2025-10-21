@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=">
+    <title>Url Shortener</title>
+</head>
+<body>
+    <h1>URL Shortener</h1>
+    <p id="shortIdNotice"></p>
+    <form action="/url" method="POST">
+        <label>
+        Enter orignal url:<input type="text" id="url" name="redirect_url" placeholder="Enter URL to shorten" required>
+
+        </label>
+        <button type="submit">Shorten</button>
+    </form>
+    <% if(locals.urls){ %>
+    <table>
+       
+        <thead>
+                <tr>
+                        <th>Sn.</th>
+                        <th colspan="4">orignal url</th>
+                        <th colspan="3">id</th>
+                        <th>views</th>
+                </tr>
+        </thead>
+        <tbody>
+            <% for(let i= 0; i<urls.length; i++){ %>
+                <tr>
+                    <td><%= i + 1 %></td>
+                    <td colspan="4">
+                        
+                        <%= urls[i].redirect_url %>
+                    
+                    <td colspan="3">
+                        <a href="http://localhost:8000/url/<%=urls[i].short_id%>" target="_blank">
+                       <%= urls[i].short_id %>
+                        </a>
+                    </td>
+                    <td><%= (urls[i].visit_history||[]).length %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <% } %>
+    <!-- <script>
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const urlInput = form.querySelector('input[name="redirect_url"]').value;
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            const formData = new FormData(form);
+            const data = {redirect_url: 1223}.stringify;
+            console.log("form data:", data);
+            try {
+                const res = await fetch("http://localhost:8000/api", {
+                    method: form.method || 'POST',
+                    body: data,
+                    headers: { Accept: 'application/json' }
+                });
+
+                if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+                const json = await res.json().catch(() => null);
+
+                if (json && json.short_id) {
+                    let note = document.getElementById('shortIdNotice');
+                    if (!note) {
+                        note = document.createElement('p');
+                        note.id = 'shortIdNotice';
+                        form.parentNode.insertBefore(note, form.nextSibling);
+                    }
+                    note.textContent = `Short id: ${json.short_id}`;
+                } else {
+                    // fallback to server-rendered response
+                    location.reload();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to shorten URL. Check console for details.');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script> -->
+</body>
+</html>
