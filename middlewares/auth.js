@@ -13,9 +13,8 @@ async function restrictToLoggedInUserOnly(req, res, next){
     next();
 }
 
-async function checkForAuth(req, res, next){
+async function checkAuth(req, res, next){
     const userUid = req.headers["authorization"];
-    
     const token= userUid ? userUid.split(" ")[1] : null;
     const user = getUser(token);
     console.log("user in checkAuth middleware:", user, token);
