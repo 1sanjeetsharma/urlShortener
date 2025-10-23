@@ -1,24 +1,25 @@
 const {getUser}= require('../services/auth');
-async function restrictToLoggedInUserOnly(req, res, next){
-    const userUid= req.headers["authorization"];
-    if(!userUid){
-        return res.status(401).redirect('/login');
+ function restrictTo(roles){
+    return function (req,res,next){
+        console.log("restrictTo middleware", req.user);
+        if(!req.user) return res.redirect("/login");
+        if(!roles.includes(req.user.role)){
+                return res.status(403).send("unAuthorized access");
+            }   
+            return next();
     }
-    const token= userUid.split(" ")[1];
-    const user= getUser(token);
-    if(!user){
-        return res.status(401).redirect('/login');
-    }
-    req.user= user;
-    next();
-}
+ }
 
-async function checkAuth(req, res, next){
-    const userUid = req.headers["authorization"];
-    const token= userUid ? userUid.split(" ")[1] : null;
+async function checkForAuthentication(req, res, next){
+    const tokenCookie = req.cookies?.token;
+    console.log("checkForAuthentication middleware", tokenCookie);
+    req.user = null;
+    if(!tokenCookie){ return next();
+    }
+    const token = tokenCookie;
     const user = getUser(token);
-    console.log("user in checkAuth middleware:", user, token);
+ 
     req.user = user;
     next();
 }
-module.exports= {restrictToLoggedInUserOnly, checkAuth};
+module.exports= {restrictTo, checkForAuthentication};
